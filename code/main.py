@@ -1,13 +1,16 @@
 import streamlit as st
 from PIL import Image
 
-# Custom CSS for the animation and button styles
+# Configure the Streamlit page
+st.set_page_config("Omni LLM", initial_sidebar_state="collapsed")
+
+# Custom CSS for animations and styling
 st.markdown(
     """
     <style>
     @keyframes fadeIn {
-        0% { opacity: 0; transform: translateY(-20px); }
-        100% { opacity: 1; transform: translateY(0); }
+        0% { opacity: 0; transform: translateX(-20px); }
+        100% { opacity: 1; transform: translateX(0); }
     }
 
     .welcome-message {
@@ -18,7 +21,7 @@ st.markdown(
         margin-top: 50px; /* Space above the message */
     }
 
-    .stTextInput>div>input {
+    .stTextInput > div > input {
         height: 100%;  /* Adjust height */
         width: 100%;   /* Adjust width */
         font-size: 14px;  /* Adjust font size */
@@ -50,38 +53,36 @@ st.markdown(
     [data-testid='stFileUploader'] section > input + div {
         display: none;  /* Hide the default uploader text */
     }
+
+    /* Animation for sidebar items */
+    .sidebar .stSelectbox, 
+    .sidebar .stButton, 
+    .sidebar .stFileUploader {
+        animation: fadeIn 1s ease forwards; /* Apply animation to sidebar elements */
+    }
+
+    .sidebar {
+        animation: fadeIn 1s ease forwards; /* Apply animation to sidebar itself */
+    }
     </style>
     """,
     unsafe_allow_html=True
 )
 
-# Initialize session state for file upload tracking
-if "uploaded_file" not in st.session_state:
-    st.session_state["uploaded_file"] = None
-
-# Function to handle file upload
-def upload_file():
-    # Automatically open the file explorer
-    st.markdown("<script>document.querySelector('input[type=file]').click();</script>", unsafe_allow_html=True)
-    uploaded_file = st.file_uploader("Upload a Document for QA", type=["pdf", "txt", "jpg", "png", "jpeg"], label_visibility="hidden", help='Upload a document for question answering and Image for extraction.')
-
-    # Save the uploaded file to session state
-    if uploaded_file is not None:
-        st.session_state["uploaded_file"] = uploaded_file
-
 # Display the animated welcome message
 st.markdown("<div class='welcome-message'>Welcome to Omni GPT!</div>", unsafe_allow_html=True)
 
+# Placeholder for main content
 main_placeholder = st.empty()
 
-# Input text box
-query = main_placeholder.text_input(
+# Input text box for user query
+user_query = main_placeholder.text_input(
     "Question: ",
     placeholder="Type your question here for analyzing OR generating image",
-    max_chars=1000
+    max_chars=1000, label_visibility="hidden"
 )
 
-# Create columns for buttons
+# Create columns for action buttons
 col1, col2, col3, col4 = st.columns([2.5, 2, 2.4, 3.7], vertical_alignment="center", gap="small")
 
 with col2:
@@ -90,23 +91,19 @@ with col2:
 with col3:
     st.button('Generate Image', key='generate_image', help='Click to generate an image.')
 
+# Sidebar elements with titles and selectboxes
+st.sidebar.title("Model for Text Analysis")
+selected_text_model = st.sidebar.selectbox("Select a Text Model", ["Model 1", "Model 2"], 
+                                               label_visibility="hidden")
 
+st.sidebar.title("Model for QAs")
+selected_qa_model = st.sidebar.selectbox("Select a QA Model", ["Model 1", "Model 2"], 
+                                             label_visibility="hidden")
 
-# Add a checkbox for toggling the sidebar
-model_selected_qa=model_selected_text=model_selected_image=None
-document=None
-show_sidebar = st.checkbox("Show Sidebar")
+st.sidebar.title("Model for Generating Image")
+selected_image_model = st.sidebar.selectbox("Select an Image Generation Model", ["Model 1", "Model 2"], 
+                                                label_visibility="hidden")
 
-if show_sidebar:
-    # Sidebar content (will be hidden until the checkbox is checked)
-    st.sidebar.title("Model for Text Analysis")
-    model_selected_text = st.sidebar.selectbox("Select a text Model", ["Model 1", "Model 2"],label_visibility="hidden")
-
-    st.sidebar.title("Model for QAs")
-    model_selected_qa = st.sidebar.selectbox("Select a QA Model", ["Model 1", "Model 2"],label_visibility="hidden")
-
-    st.sidebar.title("Model for Generating Image")
-    model_selected_image = st.sidebar.selectbox("Select a Generating Image Model", ["Model 1", "Model 2"],label_visibility="hidden")
-
-    st.sidebar.title("Upload a file")
-    document = st.sidebar.file_uploader("Upload a PDF file", type=["pdf","txt","jpeg","png","jpg"], help="Upload a pdf or text file for analyzing and image for OCR", label_visibility="hidden")	
+st.sidebar.title("Upload a File")
+uploaded_document = st.sidebar.file_uploader("Upload a PDF or Image File", type=["pdf", "txt", "jpeg", "png", "jpg"],
+                                                  help="Upload a PDF or text file for analysis and an image for OCR.", label_visibility="hidden")
