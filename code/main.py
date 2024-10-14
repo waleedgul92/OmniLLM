@@ -1,9 +1,12 @@
 import streamlit as st
 from PIL import Image
 from dotenv import load_dotenv
-from text_models import google_genai_text
+from text_models import google_genai_text , gpt2_text
 from image_models import google_genai_image
-
+from tmp_folder import use_tmp_folder
+import tempfile
+import os
+from PIL import Image
 # Configure the Streamlit page
 st.set_page_config("Omni LLM", initial_sidebar_state="collapsed")
 
@@ -109,11 +112,11 @@ with col3:
 
 # Sidebar elements with titles and selectboxes
 st.sidebar.title("Model for Text Analysis")
-selected_text_model = st.sidebar.selectbox("Select a Text Model", ["Gemini-1.5-Flash", "Model 2"], 
+selected_text_model = st.sidebar.selectbox("Select a Text Model", ["Gemini-1.5-Flash", "Gpt-2"], 
                                                label_visibility="hidden")
 
 st.sidebar.title("Model for QAs")
-selected_qa_model = st.sidebar.selectbox("Select a QA Model", ["Gemini-1.5-Flash", "Model 2"], 
+selected_qa_model = st.sidebar.selectbox("Select a QA Model", ["Model 1", "Model 2"], 
                                              label_visibility="hidden")
 
 st.sidebar.title("Model for Generating Image")
@@ -126,7 +129,7 @@ uploaded_document = st.sidebar.file_uploader("Upload a PDF or Image File", type=
 
 
 ## Check if the user has clicked the analyze button and generate text bases on 
-if user_query and analyze_button:
+if user_query and analyze_button and  not uploaded_document:
     if selected_text_model=="Gemini-1.5-Flash":
         loading_placeholder = st.empty()
         with st.spinner("Generating Response"):
@@ -134,16 +137,23 @@ if user_query and analyze_button:
         # Display the response
             st.write("\n"*3)
             st.write(response)
-    if selected_text_model=="Model 2":
-        pass
-
-if user_query and uploaded_document:
-    if selected_qa_model=="Gemini-1.5-Flash":
+    elif selected_text_model=="Gpt-2":
         loading_placeholder = st.empty()
         with st.spinner("Generating Response"):
-            response=google_genai_image(user_query)
+            response=google_genai_text(user_query)
         # Display the response
             st.write("\n"*3)
             st.write(response)
-    if selected_qa_model=="Model 2":
-        pass
+        
+
+if user_query and uploaded_document and analyze_button:
+    # Create a temporary file and save the uploaded file
+    with tempfile.NamedTemporaryFile(delete=False) as temp_file:
+        temp_file.write(uploaded_document.getbuffer())  # Write file content to the temp file
+        temp_file_path = temp_file.name  # Get the name of the temp file
+    
+    # Get absolute path of the file
+    absolute_path = os.path.abspath(temp_file_path)
+    
+    print("File saved at:", absolute_path)
+    
