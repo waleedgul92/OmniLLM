@@ -7,7 +7,6 @@ def google_genai_image(img_path,prompt:str="give me letters in image?"):
     ## Load the google api key
     env_keys=load_dotenv("./keys.env")
     google_env_key=os.getenv('GOOGLE_API_KEY')
-    print(google_env_key)
         ## Configure the generation config
     generation_config = genai.GenerationConfig(
             max_output_tokens=1000, temperature=0.1
