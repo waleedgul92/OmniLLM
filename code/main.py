@@ -185,7 +185,7 @@ if user_query and analyze_button:
 
 
 if uploaded_image and user_query:
-    Image.open(uploaded_image)
+    image=Image.open(uploaded_image)
     with st.spinner("Analyzing Image..."):
-        response = google_genai_image(uploaded_image, user_query)
+        response = google_genai_image(image, user_query)
     st.write(response)
