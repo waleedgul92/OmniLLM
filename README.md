@@ -10,4 +10,10 @@
 - Gemini-1.5-Flash for text generation and qa for images
 - Flux.1 for text generation
 
+## What you will need
+- Install requirements using text file in repo
+- Get Gemini API key
+- Get HuggingFace key
+- 
+## Video Demo
   
