@@ -1,4 +1,4 @@
-# OmniLLM
+# OmniGPT
 ## Introduction
 - Developed a chatbot using LLMs of different platforms capable of
   1. Text Generation
