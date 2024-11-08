@@ -33,5 +33,5 @@ def google_genai_text(prompt:str="What is the capital of France?"):
 
 def gpt2_text(prompt:str="What is the capital of France?"):
     generator = pipeline('text-generation', model='gpt2')
-    response=generator(prompt, max_length=1000, num_return_sequences=1)
+    response=generator(prompt, max_length=500, num_return_sequences=1)
     return response[0]['generated_text']

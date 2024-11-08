@@ -2,6 +2,14 @@ import requests
 import streamlit as st
 from dotenv import load_dotenv
 import os
+import torch
+from diffusers import (
+    StableDiffusionXLPipeline,
+    KDPM2AncestralDiscreteScheduler,
+    AutoencoderKL
+)
+import google.generativeai as genai
+from dotenv import load_dotenv
 
 # Function to generate and display image
 def generate__image_flux(query="Astronaut riding a horse", save_option=False):

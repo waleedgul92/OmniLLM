@@ -2,7 +2,7 @@ import streamlit as st
 from PIL import Image
 from dotenv import load_dotenv
 from text_models import google_genai_text, gpt2_text
-from image_models import google_genai_image
+from image_qa_models import google_genai_image
 from image_generation_models import generate__image_flux
 from tmp_folder import use_tmp_folder
 import tempfile
@@ -108,7 +108,7 @@ with col_input:
 col1, col2, col3, col4 = st.columns([2.5, 2, 2.4, 3.7], vertical_alignment="center", gap="small")
 
 with col2:
-    analyze_button = st.button('Analyze Text', key='analyze_text', help='Click to analyze the text.')
+    analyze_button = st.button('Generate Text', key='analyze_text', help='Click to analyze the text.')
 
 with col3:
     generate_image_button=st.button('Generate Image', key='generate_image', help='Click to generate an image.')
@@ -121,12 +121,8 @@ st.sidebar.title("Model for QAs")
 selected_qa_model = st.sidebar.selectbox("Select a QA Model", ["Model 1", "Model 2"], label_visibility="hidden")
 
 st.sidebar.title("Model for Generating Image")
-selected_image_model = st.sidebar.selectbox("Select an Image Generation Model", ["FLUX.1", "Model 2"], 
+selected_image_model = st.sidebar.selectbox("Select an Image Generation Model", ["FLUX.1"], 
                                                 label_visibility="hidden")
-
-st.sidebar.title("Upload a File")
-uploaded_document = st.sidebar.file_uploader("Upload a Pdf or Text file", type=["pdf", "txt"],
-                                                  help="Upload a PDF or text file for analysis ", label_visibility="hidden" )
 
 st.sidebar.title("Upload an image")
 uploaded_image = st.sidebar.file_uploader("Upload an Image File", type=["jpg", "jpeg", "png"],
@@ -175,7 +171,7 @@ if user_query and generate_image_button:
             # Option to save image after generation
         else:
             st.error(f"Error: {response.status_code}")
-
+    
 # Analyze text button logic (if needed)
 if user_query and analyze_button:
     if selected_text_model == "Gemini-1.5":
@@ -184,5 +180,12 @@ if user_query and analyze_button:
         st.write(response)
     elif selected_text_model == "Gpt-2":
         with st.spinner("Generating Response..."):
-            response = google_genai_text(user_query)
+            response = gpt2_text(user_query)
         st.write(response)
+
+
+if uploaded_image and user_query:
+    Image.open(uploaded_image)
+    with st.spinner("Analyzing Image..."):
+        response = google_genai_image(uploaded_image, user_query)
+    st.write(response)

@@ -2,8 +2,8 @@ import google.generativeai as genai
 from google.generativeai.types import HarmCategory, HarmBlockThreshold
 from dotenv import load_dotenv
 import os
-
-def google_genai_image(img_path,prompt:str="give me letters in image?"):
+import PIL.Image as Image
+def google_genai_image(image:Image,prompt:str="give me letters in image?"):
     ## Load the google api key
     env_keys=load_dotenv("./keys.env")
     google_env_key=os.getenv('GOOGLE_API_KEY')
@@ -21,10 +21,10 @@ def google_genai_image(img_path,prompt:str="give me letters in image?"):
     ## Configure the google api
     genai.configure(api_key=google_env_key)
 
-    uploaded_image = genai.upload_file(img_path)
     ## Load the model
-    model = genai.GenerativeModel(model_name="gemini-1.5-flash")
-    ## Generate the content
-    response=model.generate_content([uploaded_image,"\n\n",prompt],generation_config=generation_config,safety_settings=safety_settings)    
-    return response.text
+    model = genai.GenerativeModel("gemini-1.5-flash")
 
+    result = model.generate_content(
+       [image, "\n\n", prompt]
+    )
+    return result.text
